@@ -1,61 +1,86 @@
 # Cold Memory Kernel
 
-*The evolving memory architecture behind Hermes.*
+*The evolving architecture behind a practical AI Agent.*
 
-**Permissioned Temporal Memory Kernel — from cold storage to layered runtime.**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-A structured memory system for AI agents, originally built as a cold-memory fix for a single problem: **14 entries written, 0 ever searched.** It has since evolved into a four-layer architecture governing how an agent stores, routes, retrieves, and acts on memory across sessions.
+A structured memory and governance system for AI agents — from cold storage to layered architecture. Built for a single-user student scenario (Windows, Hermes Agent), but the principles are framework-agnostic.
 
----
+## Why this exists
 
-## Why is it still called cold-memory-kernel?
+This started as a fix for one problem: **14 memory entries written, 0 ever searched.** The agent was remembering things but never using them. It has since evolved into a four-layer architecture governing how an agent stores, routes, retrieves, and acts on information.
 
-The repository keeps its historical name to preserve links, discussions, and issue history. The cold-memory layer is now one component of a broader architecture — see [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture.
-
----
-
-## Architecture at a glance
+## Architecture
 
 ```
-Hot Memory       → Routing hints + special warnings (no executable truth)
-     ↓
-Cold Memory      → Structured knowledge (episodic / semantic / procedural)
-     ↓
-Config / Script  → Executable truth (endpoints, auth, retry logic)
-     ↓
-Runtime          → load config → execute
+Hot Memory     → Routing hints + recent corrections (2200 chars, injected every turn)
+Cold Memory    → Structured knowledge: episodic / semantic / procedural
+Config/Scripts → Executable truth: API keys, endpoints, retry logic
+Runtime        → Session state, tool outputs (ephemeral)
 ```
 
 Core principle: **Hot memory never stores executable truth. It only routes.**
 
----
+## Governance Model
 
-## Repository structure
+The system uses four object types to manage architecture evolution:
+
+| Type | Description | Example |
+|------|-------------|---------|
+| **Constraint** | Must follow, no validation needed | Register ≠ Expose separation |
+| **Hypothesis** | Awaiting Observation Week data | Tool Gating, Provider Health Score |
+| **Backlog** | Queued for future evaluation | Skill Discovery, Hook System |
+| **Proposal** | Complete design, pre-validation | AP-001: Capability-Driven Architecture |
+
+New ideas: `Idea → Proposal → Backlog → Hypothesis Review → Hypothesis → Validated/Invalidated`
+
+## Repository Structure
 
 ```
-├── README.md           ← this file
-├── ARCHITECTURE.md     ← system design overview
-├── design/             ← design docs & traces
-├── scripts/            ← CLI tools (cold-memory.py, should_activate.py)
-├── src/                ← kernel implementation
-└── CHANGELOG.md
+├── GOVERNANCE.md               ← Architecture governance (5 questions)
+├── schema.yaml                 ← Memory schema (Learning Event structure)
+├── observation-checklist.md    ← Observation Week tracking
+├── ARCHITECTURE.md             ← System overview (historical)
+├── architecture/
+│   ├── hypotheses/             ← H-001 through H-005
+│   ├── proposals/              ← AP-001: Capability architecture
+│   └── backlog/                ← Future ideas
+├── references/
+│   └── claude-code-architecture.md  ← Learnings from Claude Code
+└── README.md
 ```
 
----
+## Key Principles
 
-## Current status
+1. **只记不可推导的信息** (Only remember what can't be re-derived)
+2. **每增加一层抽象，都必须能消除至少两个具体问题** (Each abstraction must solve ≥2 problems)
+3. **证据驱动架构** (Evidence-driven, not feature-driven)
+4. **使用驱动，不是完美驱动** (Usage drives design, not perfection)
+
+## Current Status
 
 | Component | Status |
 |-----------|--------|
-| Cold Memory (3-tier JSON) | ✅ v1.0 — 17 entries, 10KB, episodic/semantic/procedural |
-| Trust Policy (L0/L1/L2) | ✅ v0 — authority boundaries verified |
-| Activation Gate | ✅ v4 — keyword-triggered retrieval |
-| L2 Metadata Policy | ✅ v1 — reference-only, no inference |
-| Hot Memory | ✅ Routing principle established, 64% utilization |
-| Project State | ✅ Milestone-triggered snapshots |
-| Closure/Maintenance/Extension | ✅ Governance modes defined |
-| Observation-driven refinement | 🚧 Observation Week — verifying in real use |
+| Memory Schema v1 | ✅ Learning Event + Admission Rule |
+| Tool Metadata | ✅ isReadOnly/isDestructive/supportsParallel |
+| Architecture Governance | ✅ GOVERNANCE.md |
+| H-001~H-003 | ✅ provisional |
+| H-004: Tool Gating | ✅ provisional |
+| H-005: Provider Health Score | ✅ provisional |
+| AP-001: Capability Architecture | ✅ proposal |
+| Observation Week | 🚧 In progress |
+| Kimi Code / Xiaomi / OpenClaw integration | ✅ Dual-channel |
+| Everything search adapter | ⏸️ Phase 2a |
 
----
+## Design Decisions
 
-Built for a single-user student scenario (Windows laptop, Hermes Agent). Principles are general but the implementation is lightweight by design.
+Key architecture decisions are documented in the hypothesis files. Each includes:
+- Problem statement and rationale
+- Verification criteria
+- Alternatives considered
+- Expected benefit/cost
+
+## License
+
+MIT

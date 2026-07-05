@@ -1,16 +1,51 @@
 # Architecture
 
-> Describes the architecture as of [current commit]. Major changes trigger a doc update.
+> Describes the full architecture as of July 2026.
+> See [GOVERNANCE.md](GOVERNANCE.md) for the governance model and [schema.yaml](schema.yaml) for memory schema.
 
 ---
 
-## Evolution
+## Complete System Overview
 
 ```
-Cold Memory (single layer)
-        │
-        ▼
-Trust Policy (L0/L1/L2)
+┌─────────────────────────────────────────────────────┐
+│                    User Query                        │
+└────────────────────┬────────────────────────────────┘
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│              Router (agents.yaml)                    │
+│  Task → Capability → Provider → Execute              │
+│  Fallback chain: DeepSeek → Kimi → Xiaomi → 小Q      │
+└──────────┬──────────┬──────────┬────────────────────┘
+           ▼          ▼          ▼
+┌──────────────┐ ┌──────────┐ ┌──────┐
+│  DeepSeek    │ │  Kimi    │ │Xiaomi│
+│  (Primary)   │ │ (Analyst)│ │(Long)│
+│  tool access │ │ no tools │ │   1M │
+│              │ │ deep     │ │ ctx  │
+│              │ │ analysis │ │      │
+└──────────────┘ └──────────┘ └──────┘
+           ┌──────┐
+           │ 小Q  │
+           │(Local│
+           │  0$) │
+           └──────┘
+
+Memory Layers:
+  Hot (2200 chars)  → Route hints, recent corrections, capability pointers
+  Cold (unlimited)  → Structured knowledge, verified facts, architecture history
+  Config (.env)     → API keys, endpoints, executable truths
+  Runtime (session) → Tool outputs, task progress, ephemeral state
+
+Governance:
+  Constraint  → Must follow (Register ≠ Expose separation)
+  Hypothesis  → Awaiting evidence (H-001~H-005)
+  Backlog     → Queued for future
+  Proposal    → Design before validation (AP-001)
+
+Current Phase: Observation Week (Feature Freeze)
+Next Milestone: Architecture Review → Phase 2a (Environment Registry)
+```
         │
         ▼
 Layered Memory (hot + cold)

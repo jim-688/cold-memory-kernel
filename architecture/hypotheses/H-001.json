@@ -1,0 +1,21 @@
+{
+  "id": "H-001",
+  "type": "architecture_hypothesis",
+  "statement": "Router层应具有独立Search Policy，而不是由Prompt隐式决定是否搜索。",
+  "rationale": "Claude 149KB system prompt中<core_search_behaviors>采用显式搜索策略（何时搜/何时不搜/搜索结果冲突处理），且经四方讨论确认此结构优于Hermes当前的隐式路由。",
+  "confidence": 0.6,
+  "verification_criteria": {
+    "level_1": "统计Obs Week中人工要求'应该搜索/不该搜索'的次数",
+    "level_2": "搜索覆盖率——当前路由表匹配搜索请求的准确率",
+    "level_3": "搜索后答案质量是否明显优于不搜索的基线"
+  },
+  "alternatives_considered": [
+    "维持现状——由Prompt隐式决定",
+    "在Tool白名单中硬编码搜索行为",
+    "由用户手动标记是否搜索"
+  ],
+  "status": "provisional",
+  "source": "Claude Opus 4.6 leaked system prompt + 四方讨论(DS/Kimi/Xiaomi/小Q) 2026-07-02",
+  "created_at": "2026-07-02",
+  "owner": "architecture-team"
+}

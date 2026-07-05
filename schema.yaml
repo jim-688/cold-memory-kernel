@@ -1,0 +1,126 @@
+# Memory Schema v1 — Hermes Agent
+# Status: RATIFIED 2026-07-02
+#
+# 原则：只记不可推导的信息。每一层由真实问题证明必要性。
+# 参考：Claude Code 记忆系统 (08-memory-system.md)
+
+---
+version: "1.0"
+ratified: "2026-07-02"
+status: active
+---
+
+## 1. Layer Architecture
+
+4-tier memory, each tier solves a distinct problem:
+
+| Tier | Capacity | Persistence | Purpose | 
+|------|----------|-------------|---------|
+| Hot   | ~2200 chars | Injected every turn | Route hints, capability pointers, recent corrections |
+| Cold  | Unlimited (disk) | Indefinite | Structured knowledge, stable facts, archived decisions |
+| Config| File-based | Permanent | Executable truths (keys, endpoints, system settings) |
+| Runtime| Session-scoped | Ephemeral | Tool outputs, intermediate state, task progress |
+
+## 2. Learning Event (Core Unit)
+
+The fundamental memory unit. Every memory entry is a Learning Event.
+
+```yaml
+learning_event:
+  observation: str                # what happened / what was learned (REQUIRED)
+  why: str                        # why this matters / root cause (REQUIRED)
+  apply_when: str                 # when to apply this knowledge (REQUIRED)
+  avoid_when: str | null          # when NOT to apply / edge cases (optional)
+  
+  # Metadata
+  confidence: float | null        # 0.0-1.0, how sure we are (default: 0.8)
+  evidence: str | null            # what supports this fact
+  status: str                     # "active" | "archived" | "obsolete" (default: "active")
+  source: str | null              # origin: "user", "self", "correction", "discovery"
+  tags: list[str] | null          # categorization tags
+  
+  # Auto-managed
+  created_at: str                 # ISO timestamp
+  last_accessed: str | null       # ISO timestamp
+  access_count: int               # how many times retrieved
+```
+
+### Example — Good entry:
+
+```yaml
+observation: "用户说'所有人讨论'时必须调其他模型API，不能猜它们会说什么"
+why: "用户2026-07-01 session中明确批评，说猜口吻=越界"
+apply_when: "用户说'让所有人讨论'/'去问他们'/'让kimi和小米看看'时"
+avoid_when: "日常单模型回答，不需要讨论时"
+confidence: 1.0
+evidence: "用户原话'让我自己去问他们'，后续Xiaomi回答佐证方向"
+status: active
+source: "correction"
+tags: ["communication", "multi-model", "hard-rule"]
+```
+
+### Example — Bad entry (rejected by admission rule):
+
+```yaml
+observation: "Task.py 的 handle_request() 方法位于第 145 行"
+why: ~     # 代码位置可从代码库推导，不应记忆
+apply_when: ~
+---
+REJECTED: code location is always derivable from source code
+```
+
+## 3. Admission Rule
+
+A memory entry is admitted ONLY if it satisfies ALL of:
+
+1. **Non-derivable**: Cannot be inferred from current project state, source code, git history, CLI --help, or config files
+2. **Stable**: Relevant for more than one session (not a temp task note)
+3. **Actionable**: Changes how I think or act (not trivia)
+4. **Falsifiable**: Has a clear condition under which it would be wrong/stale
+
+### Explicit blacklist — NEVER store:
+
+| Category | Examples | Alternative |
+|----------|----------|-------------|
+| Code locations | "function X is in file Y line Z" | search_files |
+| Git history | "commit abc123 did X" | git log |
+| CLI flags | "--flag X does Y" | --help / docs |
+| Temp task state | "working on feature X, 50% done" | session context only |
+| Tool output | "curl returned 200 OK" | re-run tool |
+| Completed milestones | "Phase 1 done on date X" | project_state.json |
+
+## 4. Hot Memory Restriction
+
+Hot memory (injected every turn) MUST NOT store executable truths.
+It is a **route hint layer** only:
+
+| Allowed in Hot | NOT allowed |
+|---------------|-------------|
+| "User hates long preambles" | "DeepSeek Key = sk-xxx" |
+| "Communication: direct, no hype" | "Ollama port = 11434" |
+| "Capability: Xiaomi API available" | "Xiaomi endpoint = api.xiaomimimo.com" |
+| "Tier: Cold has Claude Code learnings" | Full architecture doc |
+
+## 5. Compression Priority
+
+When compressing hot memory to cold:
+
+1. **Summarize** — distill to Learning Event structure
+2. **Deduplicate** — merge semantically overlapping entries, keep highest confidence
+3. **Summarize again** — verify the merged entry still satisfies Admission Rule
+
+## 6. Retention Policy
+
+| Status | Meaning | Action |
+|--------|---------|--------|
+| active | Recently used, high confidence | Keep in hot or warm cold-index |
+| archived | Not accessed in 30+ days | Cold storage only, not in default search |
+| obsolete | Contradicted by new evidence | Mark, optionally delete after 90 days |
+
+## 7. Schema Validation Rules
+
+1. Every entry MUST have `observation`, `why`, and `apply_when` filled.
+2. `confidence` defaults to 0.8 if not set.
+3. `status` defaults to "active" if not set.
+4. Entries with `confidence < 0.3` are flagged for review.
+5. Duplicate `observation` across entries triggers dedup merge.

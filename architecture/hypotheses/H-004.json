@@ -1,0 +1,31 @@
+{
+  "id": "H-004",
+  "type": "architecture_hypothesis",
+  "statement": "Router层应具有独立Tool Gating机制，按照任务能力域而非默认可见性暴露工具。",
+  "rationale": "Claude社区实践和Hermes自身经验表明，默认暴露所有Tool导致上下文噪声增加、误调用风险上升。按任务暴露工具（Task→Capability→Tool Discovery→Expose）与精简Skill目标一致。",
+  "benefit_class": "high",
+  "cost_class": "medium",
+  "confidence": 0.6,
+  "affected_components": ["Router", "Tool Registry", "Context Manager"],
+  "verification_criteria": {
+    "level_1": "Tool共现频率统计——哪些Tool经常一起被调用，形成自然分组",
+    "level_2": "误调用率——是否出现Tool被加载但从未使用的情况",
+    "level_3": "上下文长度节省——Gating后每次调用平均减少多少Token",
+    "反证": "绝大多数请求都能靠现有Router正确决策，Tool Gating几乎没有增益"
+  },
+  "observation_metrics": [
+    "tool_co_occurrence_rate",
+    "tool_load_utilization",
+    "avg_context_tokens_per_task",
+    "manual_correction_rate"
+  ],
+  "alternatives_considered": [
+    "维持现状——所有Tool默认可见",
+    "硬编码Tool白名单（per Agent）",
+    "用户手动选择可用Tool"
+  ],
+  "status": "provisional",
+  "source": "Claude Code源码分析 + Hermes架构讨论(DS/Kimi/Xiaomi/Kimi Code/小Q) 2026-07-03",
+  "created_at": "2026-07-03",
+  "owner": "architecture-team"
+}

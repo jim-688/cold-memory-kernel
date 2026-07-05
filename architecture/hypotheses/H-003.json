@@ -1,0 +1,21 @@
+{
+  "id": "H-003",
+  "type": "architecture_hypothesis",
+  "statement": "Hermes顶层应存在独立的Decision Principles，用于约束所有Agent的决策方式。",
+  "rationale": "经过数轮迭代收敛出的原则（使用驱动、每层由真实问题证明必要性、先验证再版本化等）当前分散在SOUL.md和Memory中，缺少统一承载层。",
+  "confidence": 0.7,
+  "verification_criteria": {
+    "level_1": "Obs Week中是否出现相同原则需要在不同Prompt中重复编写",
+    "level_2": "是否因缺少统一原则导致不同Agent行为不一致",
+    "level_3": "新增规则时是否需要反复回溯已有原则来判断是否冲突"
+  },
+  "alternatives_considered": [
+    "维持现状——SOUL.md + Memory分散承载",
+    "将所有原则合并为一个超长System Prompt",
+    "通过Tool白名单间接约束Agent行为"
+  ],
+  "status": "provisional",
+  "source": "Hermes架构迭代收敛 + Claude system prompt结构启发 + 四方讨论 2026-07-02",
+  "created_at": "2026-07-02",
+  "owner": "architecture-team"
+}

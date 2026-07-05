@@ -1,0 +1,37 @@
+{
+  "id": "H-005",
+  "type": "architecture_hypothesis",
+  "statement": "Router应维护每个Provider的Health Score（延迟/超时率/成功率），按动态评分排序而非固定Fallback链。",
+  "rationale": "当前Fallback链是静态的（DeepSeek→Kimi→Xiaomi→小Q），不反映各Provider实时状态。社区实践中Gateway最终都会演化出动态Health Scoring。",
+  "benefit_class": "high",
+  "cost_class": "medium",
+  "confidence": 0.5,
+  "affected_components": ["Router", "Provider Manager", "Metrics Collector"],
+  "verification_criteria": {
+    "level_1": "各Provider的真实延迟/超时率/成功率数据",
+    "level_2": "静态Fallback与实际最优Provider的偏差度",
+    "level_3": "引入Health Score后整体任务失败率的变化",
+    "反证": "实际工作流中Provider稳定性均良好（超时率<5%），静态Fallback已足够"
+  },
+  "observation_metrics": [
+    "avg_latency_per_provider",
+    "timeout_rate_per_provider",
+    "success_rate_per_provider",
+    "fallback_trigger_rate",
+    "retry_success_rate"
+  ],
+  "metrics_required": [
+    "latency",
+    "timeout_rate",
+    "success_rate"
+  ],
+  "alternatives_considered": [
+    "维持现有静态Fallback链",
+    "简单加权轮询(Weighted Round-Robin)",
+    "用户手动选择Provider"
+  ],
+  "status": "provisional",
+  "source": "Claude Code架构分析 + Hermes社区讨论 + 四方讨论 2026-07-03",
+  "created_at": "2026-07-03",
+  "owner": "architecture-team"
+}

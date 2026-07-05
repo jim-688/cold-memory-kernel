@@ -1,0 +1,21 @@
+{
+  "id": "H-002",
+  "type": "architecture_hypothesis",
+  "statement": "Hermes应将安全响应抽象为独立Safety Policy，而不是散落在Prompt或Tool白名单中。",
+  "rationale": "Claude采用了三级安全响应体系(直接回答→回答+声明→拒绝)，Hermes当前只有tools_allowed白名单，缺少分层安全决策流程。",
+  "confidence": 0.5,
+  "verification_criteria": {
+    "level_1": "Obs Week中是否频繁出现需要'回答+说明'而非简单允许/拒绝的场景",
+    "level_2": "当前tools_allowed白名单是否已覆盖实际使用中的安全需求",
+    "level_3": "是否因缺少Safety Policy导致过不安全行为"
+  },
+  "alternatives_considered": [
+    "维持白名单方案",
+    "复用Claude的三级体系直接移植",
+    "自定义Hermes安全策略"
+  ],
+  "status": "provisional",
+  "source": "Claude Opus 4.6 leaked system prompt + 四方讨论 2026-07-02",
+  "created_at": "2026-07-02",
+  "owner": "architecture-team"
+}
