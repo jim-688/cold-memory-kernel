@@ -1,17 +1,17 @@
 # Cold Memory Kernel
 
-*The evolving architecture behind a practical AI Agent.*
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![GitHub stars](https://img.shields.io/github/stars/jim-688/cold-memory-kernel?style=social)](https://github.com/jim-688/cold-memory-kernel)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jim-688/cold-memory-kernel)](https://github.com/jim-688/cold-memory-kernel)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]()
 
-A structured memory and governance system for AI agents — from cold storage to layered architecture. Built for a single-user student scenario (Windows, Hermes Agent), but the principles are framework-agnostic.
+> **The evolving memory and governance architecture behind a practical AI Agent — from cold storage to layered runtime.**
 
-## Why this exists
+A structured architecture system built for Hermes Agent, encompassing memory management, tool governance, provider routing, and capability-driven design. Started as a fix for a single problem — *"14 memory entries written, 0 ever searched"* — and evolved into a full architecture framework.
 
-This started as a fix for one problem: **14 memory entries written, 0 ever searched.** The agent was remembering things but never using them. It has since evolved into a four-layer architecture governing how an agent stores, routes, retrieves, and acts on information.
+----
 
-## Architecture
+## Architecture Overview
 
 ```
 Hot Memory     → Routing hints + recent corrections (2200 chars, injected every turn)
@@ -20,66 +20,67 @@ Config/Scripts → Executable truth: API keys, endpoints, retry logic
 Runtime        → Session state, tool outputs (ephemeral)
 ```
 
-Core principle: **Hot memory never stores executable truth. It only routes.**
-
 ## Governance Model
-
-The system uses four object types to manage architecture evolution:
 
 | Type | Description | Example |
 |------|-------------|---------|
 | **Constraint** | Must follow, no validation needed | Register ≠ Expose separation |
-| **Hypothesis** | Awaiting Observation Week data | Tool Gating, Provider Health Score |
+| **Hypothesis** | Awaiting Observation Week data | H-004: Tool Gating, H-005: Provider Health Score |
 | **Backlog** | Queued for future evaluation | Skill Discovery, Hook System |
 | **Proposal** | Complete design, pre-validation | AP-001: Capability-Driven Architecture |
 
-New ideas: `Idea → Proposal → Backlog → Hypothesis Review → Hypothesis → Validated/Invalidated`
+**Flow:** `Idea → Proposal → Backlog → Hypothesis Review → Hypothesis → Validated/Invalidated`
+
+## Key Hypotheses
+
+| ID | Statement | Status |
+|----|-----------|--------|
+| H-001 | Search Policy — when to search vs. use internal knowledge | provisional |
+| H-002 | Safety Policy — tiered safety response | provisional |
+| H-003 | Decision Principles — meta-principles for agent decisions | provisional |
+| H-004 | Tool Gating — expose tools by task capability, not by default | provisional |
+| H-005 | Provider Health Score — dynamic provider routing by latency/success rate | provisional |
 
 ## Repository Structure
 
 ```
-├── GOVERNANCE.md               ← Architecture governance (5 questions)
-├── schema.yaml                 ← Memory schema (Learning Event structure)
-├── observation-checklist.md    ← Observation Week tracking
-├── ARCHITECTURE.md             ← System overview (historical)
+├── README.md
+├── ARCHITECTURE.md         ← System overview
+├── GOVERNANCE.md           ← 5-question governance framework
+├── schema.yaml             ← Memory schema definition
+├── observation-checklist.md
 ├── architecture/
-│   ├── hypotheses/             ← H-001 through H-005
-│   ├── proposals/              ← AP-001: Capability architecture
-│   └── backlog/                ← Future ideas
-├── references/
-│   └── claude-code-architecture.md  ← Learnings from Claude Code
-└── README.md
+│   ├── hypotheses/         ← H-001 through H-005
+│   ├── proposals/          ← AP-001: Capability architecture
+│   └── backlog/            ← Future ideas
+└── references/
+    └── claude-code-architecture.md
 ```
 
-## Key Principles
+## Design Principles
 
-1. **只记不可推导的信息** (Only remember what can't be re-derived)
-2. **每增加一层抽象，都必须能消除至少两个具体问题** (Each abstraction must solve ≥2 problems)
-3. **证据驱动架构** (Evidence-driven, not feature-driven)
-4. **使用驱动，不是完美驱动** (Usage drives design, not perfection)
+1. **Only remember what can't be re-derived** — Admission Rule for memory
+2. **Each abstraction must solve ≥2 real problems** — no complexity without justification
+3. **Evidence-driven, not feature-driven** — Observation Week before implementation
+4. **Capability first, adapter second, software last** — AP-001 direction
 
-## Current Status
+## Built For
 
-| Component | Status |
-|-----------|--------|
-| Memory Schema v1 | ✅ Learning Event + Admission Rule |
-| Tool Metadata | ✅ isReadOnly/isDestructive/supportsParallel |
-| Architecture Governance | ✅ GOVERNANCE.md |
-| H-001~H-003 | ✅ provisional |
-| H-004: Tool Gating | ✅ provisional |
-| H-005: Provider Health Score | ✅ provisional |
-| AP-001: Capability Architecture | ✅ proposal |
-| Observation Week | 🚧 In progress |
-| Kimi Code / Xiaomi / OpenClaw integration | ✅ Dual-channel |
-| Everything search adapter | ⏸️ Phase 2a |
+- **User**: Single-developer, student environment (Windows, Hermes Agent)
+- **Scale**: Lightweight by design — principles are general but implementation is pragmatic
+- **Stack**: Hermes Agent, DeepSeek/Kimi/Xiaomi/Ollama providers, VS Code/Git
 
-## Design Decisions
+## Getting Started
 
-Key architecture decisions are documented in the hypothesis files. Each includes:
-- Problem statement and rationale
-- Verification criteria
-- Alternatives considered
-- Expected benefit/cost
+```bash
+# Clone and explore
+git clone https://github.com/jim-688/cold-memory-kernel.git
+cd cold-memory-kernel
+# Read the governance model
+cat GOVERNANCE.md
+# Explore hypotheses
+cat architecture/hypotheses/H-004.json
+```
 
 ## License
 
