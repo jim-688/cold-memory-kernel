@@ -76,7 +76,7 @@ Memory Layers:
 
 ```
 ├── README.md
-├── ARCHITECTURE.md              ← System overview
+├── ARCHITECTURE.md              ← Full system design
 ├── GOVERNANCE.md                ← 5-question governance framework
 ├── schema.yaml                  ← Memory schema definition
 ├── observation-checklist.md     ← Observation Week tracking

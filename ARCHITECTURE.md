@@ -1,137 +1,137 @@
 # Architecture
 
-> Describes the full architecture as of July 2026.
-> See [GOVERNANCE.md](GOVERNANCE.md) for the governance model and [schema.yaml](schema.yaml) for memory schema.
+> Full system architecture as of July 2026.  
+> See [GOVERNANCE.md](GOVERNANCE.md) for governance model, [schema.yaml](schema.yaml) for memory schema.
 
 ---
 
-## Complete System Overview
+## System Overview
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    User Query                        │
-└────────────────────┬────────────────────────────────┘
-                     ▼
-┌─────────────────────────────────────────────────────┐
-│              Router (agents.yaml)                    │
-│  Task → Capability → Provider → Execute              │
-│  Fallback chain: DeepSeek → Kimi → Xiaomi → 小Q      │
-└──────────┬──────────┬──────────┬────────────────────┘
-           ▼          ▼          ▼
-┌──────────────┐ ┌──────────┐ ┌──────┐
-│  DeepSeek    │ │  Kimi    │ │Xiaomi│
-│  (Primary)   │ │ (Analyst)│ │(Long)│
-│  tool access │ │ no tools │ │   1M │
-│              │ │ deep     │ │ ctx  │
-│              │ │ analysis │ │      │
-└──────────────┘ └──────────┘ └──────┘
-           ┌──────┐
-           │ 小Q  │
-           │(Local│
-           │  0$) │
-           └──────┘
-
-Memory Layers:
-  Hot (2200 chars)  → Route hints, recent corrections, capability pointers
-  Cold (unlimited)  → Structured knowledge, verified facts, architecture history
-  Config (.env)     → API keys, endpoints, executable truths
-  Runtime (session) → Tool outputs, task progress, ephemeral state
-
-Governance:
-  Constraint  → Must follow (Register ≠ Expose separation)
-  Hypothesis  → Awaiting evidence (H-001~H-005)
-  Backlog     → Queued for future
-  Proposal    → Design before validation (AP-001)
-
-Current Phase: Observation Week (Feature Freeze)
-Next Milestone: Architecture Review → Phase 2a (Environment Registry)
-```
-        │
-        ▼
-Layered Memory (hot + cold)
-        │
-        ▼
-Hermes Memory Architecture (4-layer: Hot → Cold → Config → Runtime)
-        │
-        ▼
-Governance modes (Closure / Maintenance / Extension)
+┌─────────────────────────────────────────────────────────────────────┐
+│                        User Query / Task                            │
+└───────────────────────────┬─────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                           ROUTER                                    │
+│                                                                     │
+│   Task → Capability → Provider Selection → Execute                 │
+│                                                                     │
+│   Fallback Chain:  DeepSeek(primary) → Kimi → Xiaomi → 小Q(local)  │
+└──┬──────────────┬──────────────┬──────────────┬────────────────────┘
+   │              │              │              │
+   ▼              ▼              ▼              ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│ DeepSeek │ │   Kimi   │ │  Xiaomi  │ │   小Q    │
+│  V4      │ │  k2.5    │ │ mimo-v2.5│ │ Qwen3-8B │
+│──────────│ │──────────│ │──────────│ │──────────│
+│ Primary  │ │ Analyst  │ │ Long ctx │ │ Local    │
+│ Tool acc │ │ Deep     │ │ 1M token │ │ Free     │
+│ ess      │ │ analysis │ │          │ │ Offline  │
+└──────────┘ └──────────┘ └──────────┘ └──────────┘
 ```
 
-The system started as a fix for one problem: "memory entries were written but never searched." Each layer was added in response to a real failure mode, not pre-planned.
+---
+
+## Memory Architecture (4-Layer)
+
+```
+   🔥 HOT MEMORY (2,200 chars, injected every turn)
+   ┌─────────────────────────────────────────────────────┐
+   │ Route hints, recent corrections, capability pointers │
+   │ Only routes — never stores executable truth          │
+   └─────────────────────┬───────────────────────────────┘
+                         │
+                         ▼
+   ❄️ COLD MEMORY (unlimited, file-based)
+   ┌─────────────────────────────────────────────────────┐
+   │  Episodic  │  Semantic  │  Procedural               │
+   │  (events)  │  (facts)   │  (workflows)              │
+   │            │            │                            │
+   │  H-001~005 │  Schema    │  Observation checklist     │
+   │  AP-001    │  Rules     │  Governance model          │
+   └─────────────────────┬───────────────────────────────┘
+                         │
+                         ▼
+   ⚙️ CONFIG (`.env`, `config.yaml`)
+   ┌─────────────────────────────────────────────────────┐
+   │ API keys, endpoints, retry logic, tool definitions   │
+   │ Executable truth — never in hot memory               │
+   └─────────────────────┬───────────────────────────────┘
+                         │
+                         ▼
+   ⏳ RUNTIME (session-scoped, ephemeral)
+   ┌─────────────────────────────────────────────────────┐
+   │ Tool outputs, task progress, conversation context    │
+   │ Discarded when session ends                          │
+   └─────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Layers
+## Governance Model
 
-### Hot Memory (Routing Layer)
-
-**Role:** Lightweight index. Tells the agent *what exists, where to find it, and what to watch out for.*
-
-**Does NOT store:**
-- Executable configuration (endpoints, auth keys, schemas)
-- Full knowledge content
-- Verbatim conversation history
-
-**Stores:**
-- Capability tags ("xiaomi-api")
-- Route hints ("requires wrapper timeout")
-- Special warnings ("thinking must be disabled")
-
-### Cold Memory (Knowledge Layer)
-
-**Role:** Structured long-term storage. Three tiers:
-
-| Tier | Content | TTL | Example |
-|------|---------|-----|---------|
-| Episodic | Session summaries, event records | 90 days | "2026-07-01: Round 1 Archive completed" |
-| Semantic | Facts, preferences, stable knowledge | Never | "User studies big data, goal is 专升本" |
-| Procedural | Workflows, configs, reusable patterns | Never | "API key lookup order" |
-
-### Config / Script Layer (Executable Truth)
-
-**Role:** The single source of executable configuration. Endpoints, auth formats, retry logic, payload schemas live here — in `.env`, `openclaw.json`, wrapper scripts, or cold storage JSON.
-
-Runtime never guesses; it loads from here.
-
-### Runtime (Execution Layer)
-
-**Role:** `load config → execute`. No speculation, no fallback to hot memory for execution details.
+```
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────────┐
+│  Idea    │───▶│ Proposal │───▶│ Backlog  │───▶│ Hypothesis   │
+│ (random  │    │ (designed│    │ (queued) │    │ Review       │
+│  thought)│    │  doc)    │    │          │    │              │
+└──────────┘    └──────────┘    └──────────┘    └──────┬───────┘
+                                                        │
+                                            ┌───────────┴───────────┐
+                                            ▼                       ▼
+                                    ┌──────────────┐       ┌──────────────┐
+                                    │  Hypothesis  │       │  Invalidated  │
+                                    │  (provisional│       │  (rejected)   │
+                                    │  /validated) │       │               │
+                                    └──────────────┘       └──────────────┘
+                                           │
+                                           ▼
+                                    ┌──────────────┐
+                                    │  Constraint  │
+                                    │  (must follow)│
+                                    └──────────────┘
+```
 
 ---
 
-## Runtime Principles
+## Object Definitions
 
-1. **L0 is authoritative.** Runtime output (command results, API responses) overrides memory.
-2. **L1 is working state.** Current session facts, verified before use.
-3. **L2 is reference only.** Cold cache, read by default. Never inferred from.
-4. **Hot memory is never authoritative.** It routes; it doesn't execute.
-5. **Retrieval is uncertainty-driven.** Not every query triggers cold memory search — only when confidence is low.
-6. **Project state tracks "where am I?"** Not "what do I know?" — that's cold memory's job.
-
----
-
-## Current Scope
-
-| State | Component |
-|-------|-----------|
-| ✅ Stable | Cold Memory (3-tier JSON, 17 entries, 10KB) |
-| ✅ Stable | Trust Policy (L0/L1/L2 boundaries verified) |
-| ✅ Stable | Activation Gate (v4, keyword-triggered) |
-| ✅ Stable | Hot Memory routing principle |
-| ✅ Stable | Project State (milestone-triggered snapshots) |
-| ✅ Stable | Closure/Maintenance/Extension governance |
-| 🚧 In progress | Observation Week — verifying in real use |
-| ⏳ Future | Automatic activation refinement |
-| ⏳ Future | Cold → Hot promotion mechanisms |
+| Object | Description | Location |
+|--------|-------------|----------|
+| **Constraint** 🔒 | Must follow, no validation needed | `architecture/constraints/` |
+| **Hypothesis** 🔬 | Awaiting evidence from Observation Week | `architecture/hypotheses/` |
+| **Backlog** 📋 | Queued for future evaluation | `architecture/backlog/` |
+| **Proposal** 📐 | Complete design doc, pre-validation | `architecture/proposals/` |
 
 ---
 
-## Key Design Decisions
+## Key Files
 
-| Decision | Rationale |
-|----------|-----------|
-| Hot memory doesn't store truth | Prevents prompt bloat, version drift, and logic duplication |
-| Only 4 fields in project state | Project state tracks "where am I?", not "what do I know?" |
-| Merge queue decided by usage | Real usage reveals overlap better than static analysis |
-| Archive index retained | Lowers discovery cost — system knows a capability exists even when inactive |
-| Documentation describes stable consensus | Prevents docs from becoming inflated design notes |
+| File | Purpose |
+|------|---------|
+| `GOVERNANCE.md` | 5-question governance framework |
+| `schema.yaml` | Memory schema (Learning Event, Admission Rule) |
+| `observation-checklist.md` | Observation Week tracking checklist |
+| `ARCHITECTURE.md` | This file — system overview |
+| `project_state.json` | Current project phase and status |
+
+---
+
+## Current Status
+
+```
+Phase:     Observation Week 1 / Feature Freeze
+Status:    Collecting real usage data
+Next:      Architecture Review → Phase 2a (Environment Registry)
+```
+
+---
+
+## Design Constraints
+
+- **Single-user, Windows environment** — No distributed system complexity
+- **Lightweight** — No Redis, Kafka, or databases needed
+- **Pragmatic** — Each abstraction must solve ≥2 real problems
+- **Discovery cost matters** — Archived capabilities must remain discoverable
