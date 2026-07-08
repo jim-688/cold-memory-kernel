@@ -15,7 +15,10 @@
 一个用于 AI Agent 的架构治理与记忆系统设计仓库。
 An architecture repository for AI agent memory, governance, and capability design.
 
-### What problems does it solve?
+### What problems does it solve? | What makes it different?
+
+Most AI agent projects show you what they *can do* — how many models, tools, and features they support.
+This repo shows you *how an agent should evolve* — with evidence, governance, and discipline.
 
 | Problem | Solution |
 |---------|----------|
