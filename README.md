@@ -1,5 +1,5 @@
 # Cold Memory Kernel
-## 🏗️ Hermes Agent Architecture Framework — Memory, Governance & Capability Design
+## Hermes Agent Architecture Repository
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/jim-688/cold-memory-kernel?style=social)](https://github.com/jim-688/cold-memory-kernel)
@@ -8,11 +8,45 @@
 [![中文](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87-blue)](README.md)
 [![GitHub issues](https://img.shields.io/github/issues/jim-688/cold-memory-kernel)](https://github.com/jim-688/cold-memory-kernel/issues)
 
-> **A practical architecture framework for AI agents — memory management, tool governance, provider routing, and evidence-driven design.**
+---
 
-Built for [Hermes Agent](https://github.com/NousResearch/hermes-agent). Started as a fix for one problem: *"14 memory entries written, 0 ever searched."* Evolved into a full governance system with hypotheses, observation-driven iteration, and capability-first architecture.
+### What is this?
 
-**Real project, real data, real engineering decisions.**
+一个用于 AI Agent 的架构治理与记忆系统设计仓库。
+An architecture repository for AI agent memory, governance, and capability design.
+
+### What problems does it solve?
+
+| Problem | Solution |
+|---------|----------|
+| 🔄 Agent 记忆写了但没用 | Hot→Cold→Config→Runtime 四层架构 |
+| 🎯 工具体积膨胀 | Tool Gating + Register≠Expose 分离 |
+| ⚡ Provider 选错/超时 | Provider Health Score + 动态路由 |
+| 📋 架构决策混乱 | Hypothesis + Observation Week 证据驱动 |
+| 🧩 能力扩展困难 | Capability Registry + AP-001 提案 |
+
+### Who is it for?
+
+正在开发 AI Agent / Coding Agent 的开发者。
+Built for [Hermes Agent](https://github.com/NousResearch/hermes-agent).
+
+### Quick Demo
+
+```bash
+python demo.py
+# → Shows current architecture status, hypotheses, and routing logic
+```
+
+### Current Status
+
+```
+Phase:  Observation Week 1 (Feature Freeze)
+Status: Collecting real usage data before architecture decisions
+```
+
+---
+
+## 🏗️ Architecture at a Glance
 
 ---
 
