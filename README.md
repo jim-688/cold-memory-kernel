@@ -1,15 +1,18 @@
 # Cold Memory Kernel
+## 🏗️ Hermes Agent Architecture Framework — Memory, Governance & Capability Design
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/jim-688/cold-memory-kernel?style=social)](https://github.com/jim-688/cold-memory-kernel)
 [![GitHub last commit](https://img.shields.io/github/last-commit/jim-688/cold-memory-kernel)](https://github.com/jim-688/cold-memory-kernel)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]()
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![中文](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87-blue)](README.md)
 [![GitHub issues](https://img.shields.io/github/issues/jim-688/cold-memory-kernel)](https://github.com/jim-688/cold-memory-kernel/issues)
 
-> **The evolving memory and governance architecture behind a practical AI Agent.**
+> **A practical architecture framework for AI agents — memory management, tool governance, provider routing, and evidence-driven design.**
 
-Started as a fix for one problem: *"14 memory entries written, 0 ever searched."* Evolved into a full architecture framework with governance model, hypotheses, and capability-driven design.
+Built for [Hermes Agent](https://github.com/NousResearch/hermes-agent). Started as a fix for one problem: *"14 memory entries written, 0 ever searched."* Evolved into a full governance system with hypotheses, observation-driven iteration, and capability-first architecture.
+
+**Real project, real data, real engineering decisions.**
 
 ---
 
